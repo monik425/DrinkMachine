@@ -1,0 +1,116 @@
+﻿@model DrinkMachine.Models.VendingMachine
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+
+@using (Html.BeginForm("Index", "VendingMachine", FormMethod.Post, new { id = "vendingMachineForm" }))
+{@Html.ValidationSummary(true)
+@Html.HiddenFor(m => m.ResultMessage)
+<fieldset>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <label id="instructionsLabel" class=" col-form-label-lg">To use this Vending Machine you have to at least introduce 1 coin and select 1 drink</label>
+            </div>
+        </div>
+        <div class="row">
+
+            <div class="col"> <h3> Coin Information </h3></div>
+        </div>
+        <div class="row like-table ">
+
+            <div class="row">
+                @for (int i = 0; i < @Model.ClientCoins.Count; i++)
+                {
+                    @Html.HiddenFor(m => m.ClientCoins[i].Id)
+                    <div class="col-md editor-label">
+
+                        @Html.TextBoxFor(m => m.ClientCoins[i].Quantity, new { @type = "number", style = "width:75px", @onchange = "validateInputs()" })
+                        <div class="col-md"><label for="quantityCoin">@Model.ClientCoins[i].Id</label></div>
+                        @Html.ValidationMessageFor(model => model.ClientCoins[i].Quantity)
+                    </div>
+
+                }
+            </div>
+
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col"> <h3> Product Information </h3></div>
+        </div>
+
+
+        @for (int i = 0; i < @Model.InventoryProducts.Count; i++)
+        {
+            @Html.HiddenFor(m => m.InventoryProducts[i].Quantity)
+            @Html.HiddenFor(m => m.InventoryProducts[i].Name)
+            <div class="row">
+                <div class="col-sm-2">
+                    <div class="row">
+                        <div class="col-sm-2 offset-2">
+                            <label for="colFormLabelLg" class="col-sm-2 col-form-label col-form-label-lg"> @Model.InventoryProducts[i].Name</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <label for="colFormLabelSm" class="col-xs-12 col-form-label col-form-label-sm"> Available: @Model.InventoryProducts[i].Quantity , Price: @Model.InventoryProducts[i].Price </label>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-sm-9">
+                    @{ var product = @Model.ClientProducts.Find(item => item.Name == @Model.InventoryProducts[i].Name); }
+                    @{var indexProd = @Model.ClientProducts.IndexOf(@product); }
+                    @Html.HiddenFor(m => m.ClientProducts[@indexProd].Name)
+                    @Html.HiddenFor(m => m.ClientProducts[@indexProd].Price)
+                    @Html.TextBoxFor(m => m.ClientProducts[@indexProd].Quantity, new { @type = "number", style = "width:75px", @onchange = "updateTotalAmount(this); validateInputs()" })
+                    @Html.ValidationMessageFor(model => model.ClientProducts[@indexProd].Quantity)
+
+                </div>
+            </div>
+        }
+    </div>
+
+
+    <div class="row">
+        <div class="col-md offset-5">
+            <label class=" col-form-label-lg">Order Total:</label>
+            <label class="col-form-label-sm" id="totalAmount"></label>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md offset-6">
+            <input type="submit" id="submitBtn" name="submitBtn" value="Get Drinks" class="btn btn-primary" />
+        </div>
+    </div>
+</fieldset>
+}
+
+<div class="modal fade" tabindex="-1" role="dialog" id="messageModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+
+                <h4 class="modal-title">Results:</h4>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <p id="paragraphBody"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+}
