@@ -3,6 +3,7 @@
     showResults();
     cleanInputs();
     validateInputs();
+    validateQuantiyInputs();
     
 });
 
@@ -32,6 +33,24 @@ function validateInputs() {
         $('#instructionsLabel').hide();
     }
     
+}
+
+
+function validateQuantiyInputs() {
+
+    $("#vendingMachineForm").find('input[type="hidden"]').each(
+        function (index) {
+            var input = $(this);
+            var elementQuantName = input.attr('name');
+            if (elementQuantName.includes("Quantity") && input.val() == 0) {
+                var ElementProdName = elementQuantName.replace("Quantity", "Name");
+                var InvProdName = $("[name='" + ElementProdName + "']").val();
+                var ClientProdNameId = $('#vendingMachineForm input[type="hidden"][value="' + InvProdName + '"][name^="ClientProducts"]').attr("name")
+                var ClientProdQuantName = ClientProdNameId.replace("Name", "Quantity");
+                $('#vendingMachineForm input[name="' + ClientProdQuantName+'"]').attr("disabled", true);
+            }
+        }
+    );
 }
 
 function cleanInputs() {

@@ -108,9 +108,9 @@ namespace DrinkMachine.Models.Utils
         private static void UpdateAmountOfCoinsList(String CoinId, int quantityToAdd, List<Coin> List)
         {
             var coin = List.Find(item => item.Id == CoinId);
-            List.Remove(coin);
-
+            int ItemIndex = List.IndexOf(coin);
             coin.Quantity += quantityToAdd;
+            List[ItemIndex] = coin;
             List.Add(coin);
 
         }
@@ -119,9 +119,9 @@ namespace DrinkMachine.Models.Utils
         private static void UpdateProductInventory(string ProductId, int Quantity, List<Product> InventoryProducts)
         {
             var myItem = InventoryProducts.Find(item => item.Name == ProductId);
-            InventoryProducts.Remove(myItem);
+            int ItemIndex = InventoryProducts.IndexOf(myItem);
             myItem.Quantity += Quantity;
-            InventoryProducts.Add(myItem);
+            InventoryProducts[ItemIndex] = myItem;
         }
 
 
